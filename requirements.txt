@@ -1,4 +1,5 @@
 scikit-learn
 pandas
 numpy
-bartpy
+git+https://github.com/JakeColtman/bartpy.git@ReadOneTrees
+pytest
