@@ -4,9 +4,9 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.preprocessing import PolynomialFeatures
 
-from keras.models import Sequential
-from keras.layers import Dense, Activation
-
+from keras.models import Model
+from keras.layers import Input, Dense, Activation
+from keras.optimizers import Adam
 import bartpy.sklearnmodel
 
 # define base S-Learner and T-Learners
@@ -74,6 +74,15 @@ class DecisionTree_TLearner(TLearner):
         self.model0 = DecisionTreeRegressor(*args, **kwargs)
         self.model1 = DecisionTreeRegressor(*args, **kwargs)
 
+class MLP_SLearner(SLearner):
+    def __init__(self, *args, **kwargs):
+        self.model = MLP(*args, **kwargs)
+
+class MLP_TLearner(TLearner):
+    def __init__(self, *args, **kwargs):
+        self.model0 = MLP(*args, **kwargs)
+        self.model1 = MLP(*args, **kwargs)
+
 # Implement Wrappers
 class LassoWithInteractions():
     def __init__(self, degree = 2, *args, **kwargs):
@@ -87,3 +96,26 @@ class LassoWithInteractions():
     def predict(self, X):
         X = self.poly.fit_transform(X)
         return self.model.predict(X)
+
+class MLP():
+    def __init__(self, num_features = 17, num_layers = 4, hidden_dim = 32,
+                 epochs = 20, batch_size = 32, lr = 1e-4):
+        input = Input(shape=(num_features,))
+        x = Dense(hidden_dim, activation = 'relu')(input)
+
+        for _ in range(num_layers - 1):
+            x = Dense(hidden_dim, activation = 'relu')(x)
+
+        out = Dense(1)(x)
+        self.model = Model(inputs=input, outputs=out)
+        opt = Adam(learning_rate=lr)
+        self.model.compile(opt, loss = 'mse')
+
+        self.batch_size = batch_size
+        self.epochs = epochs
+
+    def fit(self, X, y):
+        self.model.fit(X, y, batch_size = self.batch_size, epochs = self.epochs)
+
+    def predict(self, X):
+        return self.model.predict(X).reshape(-1)

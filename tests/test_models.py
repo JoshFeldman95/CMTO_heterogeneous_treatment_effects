@@ -35,7 +35,9 @@ def test_models():
         models.RandomForest_SLearner(),
         models.RandomForest_TLearner(),
         models.DecisionTree_SLearner(),
-        models.DecisionTree_TLearner()
+        models.DecisionTree_TLearner(),
+        models.MLP_SLearner(num_features = len(X_col) + 1),
+        models.MLP_TLearner(num_features = len(X_col))
     ]
 
     for model in model_list:

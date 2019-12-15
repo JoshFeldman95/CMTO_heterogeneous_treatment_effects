@@ -1,5 +1,7 @@
 scikit-learn
 pandas
 numpy
+keras
 git+https://github.com/JakeColtman/bartpy.git@ReadOneTrees
 pytest
+tensorflow
